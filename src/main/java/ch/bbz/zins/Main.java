@@ -2,10 +2,11 @@ package ch.bbz.zins;
 
 import ch.bbz.zins.aufgaben.FunktionaleZinsen;
 import ch.bbz.zins.aufgaben.ImperativeZinsen;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws JsonProcessingException {
         /*      Choice choice = new Choice();
         choice.ausWaehlen();*/
 
