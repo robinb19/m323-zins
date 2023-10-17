@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class ImperativeZinsen {
     String jsonString = "{\n" +
@@ -56,7 +54,70 @@ public class ImperativeZinsen {
     public ImperativeZinsen() throws JsonProcessingException {
     }
 
-    public void updatedValue(){
+
+    public void averageMonth() {
+        try {
+            JsonNode monthsNode = rootNode.get("months");
+
+            if (monthsNode.isArray()) {
+                int numberOfMonths = monthsNode.size();
+
+                for (int i = 0; i < numberOfMonths; i++) {
+                    JsonNode daysNode = monthsNode.get(i);
+                    String fieldName = "daysFrom" + (i + 1);
+
+                    if (daysNode.has(fieldName) && daysNode.get(fieldName).isArray()) {
+                        int numberOfDays = daysNode.get(fieldName).size();
+                        double sum = 0.0;
+
+                        for (int j = 0; j < numberOfDays; j++) {
+                            sum += daysNode.get(fieldName).get(j).asDouble();
+                        }
+
+                        double average = sum / numberOfDays;
+                        System.out.println("Durchschnitt für Monat " + (i + 1) + ": " + average);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void averageYear() {
+        try {
+            JsonNode monthsNode = rootNode.get("months");
+
+            if (monthsNode.isArray()) {
+                List<Double> allRates = new ArrayList<>();
+
+                for (JsonNode monthData : monthsNode) {
+                    Iterator<Map.Entry<String, JsonNode>> fields = monthData.fields();
+                    while (fields.hasNext()) {
+                        Map.Entry<String, JsonNode> entry = fields.next();
+                        if (entry.getValue().isArray()) {
+                            JsonNode arrayNode = entry.getValue();
+                            for (JsonNode value : arrayNode) {
+                                allRates.add(value.asDouble());
+                            }
+                        }
+                    }
+                }
+
+                double sum = 0.0;
+                for (Double rate : allRates) {
+                    sum += rate;
+                }
+                double average = allRates.isEmpty() ? 0.0 : sum / allRates.size();
+
+                System.out.println("Durchschnittlicher Zinssatz über alle Monate: " + average);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updatedValue() {
 
         try {
             JsonNode monthsNode = rootNode.get("months");
@@ -108,34 +169,6 @@ public class ImperativeZinsen {
                     System.out.println("Minimaler Wert: " + minValues.get(i));
                     System.out.println("Differenz: " + differences.get(i));
                     System.out.println();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    public void averageMonth() {
-        try {
-            JsonNode monthsNode = rootNode.get("months");
-
-            if (monthsNode.isArray()) {
-                int numberOfMonths = monthsNode.size();
-
-                for (int i = 0; i < numberOfMonths; i++) {
-                    JsonNode daysNode = monthsNode.get(i);
-                    String fieldName = "daysFrom" + (i + 1);
-
-                    if (daysNode.has(fieldName) && daysNode.get(fieldName).isArray()) {
-                        int numberOfDays = daysNode.get(fieldName).size();
-                        double sum = 0.0;
-
-                        for (int j = 0; j < numberOfDays; j++) {
-                            sum += daysNode.get(fieldName).get(j).asDouble();
-                        }
-
-                        double average = sum / numberOfDays;
-                        System.out.println("Durchschnitt für Monat " + (i + 1) + ": " + average);
-                    }
                 }
             }
         } catch (Exception e) {
