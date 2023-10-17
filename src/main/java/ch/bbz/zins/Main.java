@@ -20,7 +20,14 @@ public class Main {
 
 
         ImperativeZinsen imperativeZinsen = new ImperativeZinsen();
+        imperativeZinsen.averageYear();
+        imperativeZinsen.averageMonth();
         imperativeZinsen.updatedValue();
+
+        FunktionaleZinsen funktionaleZinsen = new FunktionaleZinsen();
+        funktionaleZinsen.averageYear();
+        funktionaleZinsen.averageMonth();
+        funktionaleZinsen.updatedValue();
     }
 }
 

@@ -4,9 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 
 public class FunktionaleZinsen {
     String jsonString = "{\n" +
@@ -60,36 +61,22 @@ public class FunktionaleZinsen {
             JsonNode monthsNode = rootNode.get("months");
 
             if (monthsNode.isArray()) {
-                int numberOfMonths = monthsNode.size();
-                Double[][] data = new Double[numberOfMonths][];
+                IntStream.range(0, monthsNode.size())
+                        .forEach(monthIndex -> {
+                            String fieldName = "daysFrom" + (monthIndex + 1);
+                            JsonNode monthData = monthsNode.get(monthIndex).path(fieldName);
 
-                for (int i = 0; i < numberOfMonths; i++) {
-                    JsonNode daysNode = monthsNode.get(i);
-                    String fieldName = "daysFrom" + (i + 1);
+                            if (monthData.isArray()) {
+                                double average = StreamSupport.stream(monthData.spliterator(), false)
+                                        .mapToDouble(JsonNode::asDouble)
+                                        .average()
+                                        .orElse(0.0);
 
-                    if (daysNode.has(fieldName) && daysNode.get(fieldName).isArray()) {
-                        int numberOfDays = daysNode.get(fieldName).size();
-                        data[i] = new Double[numberOfDays];
-                        for (int j = 0; j < numberOfDays; j++) {
-                            data[i][j] = daysNode.get(fieldName).get(j).asDouble();
-                        }
-                    }
-                }
-
-                for (int i = 0; i < data.length; i++) {
-                    Double[] monthData = data[i];
-                    double sum = 0.0;
-
-                    for (int j = 0; j < monthData.length; j++) {
-                        sum += monthData[j];
-                    }
-
-                    double average = sum / monthData.length;
-                    System.out.println("Durchschnitt für Monat " + (i + 1) + ": " + average);
-                }
+                                System.out.println("Durchschnitt für Monat " + (monthIndex + 1) + ": " + average);
+                            }
+                        });
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -99,80 +86,61 @@ public class FunktionaleZinsen {
             JsonNode monthsNode = rootNode.get("months");
 
             if (monthsNode.isArray()) {
-                List<Double> allRates = new ArrayList<>();
-
-                for (JsonNode monthData : monthsNode) {
-                    monthData.fields().forEachRemaining(entry -> {
-                        if (entry.getValue().isArray()) {
-                            entry.getValue().elements().forEachRemaining(value -> {
-                                allRates.add(value.asDouble());
+                double average = StreamSupport.stream(monthsNode.spliterator(), false)
+                        .flatMap(monthData -> {
+                            List<Double> rates = new ArrayList<>();
+                            monthData.fields().forEachRemaining(entry -> {
+                                if (entry.getValue().isArray()) {
+                                    entry.getValue().elements().forEachRemaining(value -> {
+                                        rates.add(value.asDouble());
+                                    });
+                                }
                             });
-                        }
-                    });
-                }
+                            return rates.stream();
+                        })
+                        .mapToDouble(Double::doubleValue)
+                        .average()
+                        .orElse(0.0);
 
-                double sum = 0.0;
-                for (Double rate : allRates) {
-                    sum += rate;
-                }
-                double average = sum / allRates.size();
-
-                System.out.println("\n \nDurchschnittlicher Zinssatz über alle Monate: " + average + "\n\n");
+                System.out.println("Durchschnittlicher Zinssatz über alle Monate: " + average);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void changedValue() {
-
+    public void updatedValue() {
         try {
             JsonNode monthsNode = rootNode.get("months");
 
             if (monthsNode.isArray()) {
-                List<List<Double>> modifiedRates = new ArrayList<>();
-
-                for (JsonNode monthData : monthsNode) {
-                    List<Double> monthRates = new ArrayList<>();
-
-                    monthData.fields().forEachRemaining(entry -> {
-                        if (entry.getValue().isArray()) {
-                            entry.getValue().elements().forEachRemaining(value -> {
-                                double rate = value.asDouble();
-                                if (rate < 0.040) {
-                                    rate *= 1.5;
-                                } else {
-                                    rate *= 1.2;
+                List<Map<String, Double>> results = StreamSupport.stream(monthsNode.spliterator(), false)
+                        .map(monthData -> {
+                            Map<String, Double> monthResult = new HashMap<>();
+                            monthData.fields().forEachRemaining(entry -> {
+                                if (entry.getValue().isArray()) {
+                                    List<Double> monthRates = new ArrayList<>();
+                                    entry.getValue().elements().forEachRemaining(value -> {
+                                        double rate = value.asDouble();
+                                        rate = (rate < 0.04) ? rate * 1.5 : rate * 1.2;
+                                        monthRates.add(rate);
+                                    });
+                                    monthResult.put("max", Collections.max(monthRates));
+                                    monthResult.put("min", Collections.min(monthRates));
+                                    monthResult.put("diff", Collections.max(monthRates) - Collections.min(monthRates));
                                 }
-                                monthRates.add(rate);
                             });
-                        }
-                    });
+                            return monthResult;
+                        })
+                        .filter(result -> !result.isEmpty())
+                        .collect(Collectors.toList());
 
-                    modifiedRates.add(monthRates);
-                }
-
-                List<Double> maxValues = new ArrayList<>();
-                List<Double> minValues = new ArrayList<>();
-                List<Double> differences = new ArrayList<>();
-
-                for (List<Double> rates : modifiedRates) {
-                    if (!rates.isEmpty()) {
-                        double max = Collections.max(rates);
-                        double min = Collections.min(rates);
-                        double diff = max - min;
-
-                        maxValues.add(max);
-                        minValues.add(min);
-                        differences.add(diff);
-                    }
-                }
-
-                for (int i = 0; i < maxValues.size(); i++) {
+                for (int i = 0; i < results.size(); i++) {
+                    Map<String, Double> result = results.get(i);
                     System.out.println("Monat " + (i + 1) + ":");
-                    System.out.println("Maximaler Wert: " + maxValues.get(i));
-                    System.out.println("Minimaler Wert: " + minValues.get(i));
-                    System.out.println("Differenz: " + differences.get(i));
+                    System.out.println("Maximaler Wert: " + result.get("max"));
+                    System.out.println("Minimaler Wert: " + result.get("min"));
+                    System.out.println("Differenz: " + result.get("diff"));
                     System.out.println();
                 }
             }
@@ -180,5 +148,6 @@ public class FunktionaleZinsen {
             e.printStackTrace();
         }
     }
+
 
 }
