@@ -114,4 +114,33 @@ public class ImperativeZinsen {
             e.printStackTrace();
         }
     }
+    public void averageMonth() {
+        try {
+            JsonNode monthsNode = rootNode.get("months");
+
+            if (monthsNode.isArray()) {
+                int numberOfMonths = monthsNode.size();
+
+                for (int i = 0; i < numberOfMonths; i++) {
+                    JsonNode daysNode = monthsNode.get(i);
+                    String fieldName = "daysFrom" + (i + 1);
+
+                    if (daysNode.has(fieldName) && daysNode.get(fieldName).isArray()) {
+                        int numberOfDays = daysNode.get(fieldName).size();
+                        double sum = 0.0;
+
+                        for (int j = 0; j < numberOfDays; j++) {
+                            sum += daysNode.get(fieldName).get(j).asDouble();
+                        }
+
+                        double average = sum / numberOfDays;
+                        System.out.println("Durchschnitt für Monat " + (i + 1) + ": " + average);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
