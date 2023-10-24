@@ -93,7 +93,7 @@ public class ImperativeZinsen {
                         }
 
                         double average = sum / numberOfDays;
-                        System.out.println("Durchschnitt für Monat " + (i + 1) + ": " + average);
+                        System.out.println("Average per Monht " + (i + 1) + ": " + average);
                     }
                 }
             }
@@ -131,7 +131,7 @@ public class ImperativeZinsen {
                 }
                 double average = allRates.isEmpty() ? 0.0 : sum / allRates.size();
 
-                System.out.println("Durchschnittlicher Zinssatz über alle Monate: " + average);
+                System.out.println("Average interest rate over all months: " + average);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -189,10 +189,10 @@ public class ImperativeZinsen {
                 }
 
                 for (int i = 0; i < maxValues.size(); i++) {
-                    System.out.println("Monat " + (i + 1) + ":");
-                    System.out.println("Maximaler Wert: " + maxValues.get(i));
-                    System.out.println("Minimaler Wert: " + minValues.get(i));
-                    System.out.println("Differenz: " + differences.get(i));
+                    System.out.println("Month " + (i + 1) + ":");
+                    System.out.println("Maximum value: " + maxValues.get(i));
+                    System.out.println("Minimal Value: " + minValues.get(i));
+                    System.out.println("Difference: " + differences.get(i));
                     System.out.println();
                 }
             }
