@@ -11,6 +11,8 @@ import java.util.stream.StreamSupport;
 
 /**
  * Implementation with functional elements
+ *  * Autor: Jamie Niederhauser und Robin Bühler
+ *  * Version: 1.0
  */
 public class FunktionaleZinsen {
 
@@ -89,7 +91,7 @@ public class FunktionaleZinsen {
                                         .average()
                                         .orElse(0.0);
 
-                                System.out.println("Durchschnitt für Monat " + (monthIndex + 1) + ": " + average);
+                                System.out.println("Average per month " + (monthIndex + 1) + ": " + average);
                             }
                         });
             }
@@ -120,7 +122,7 @@ public class FunktionaleZinsen {
                         .average()
                         .orElse(0.0);
 
-                System.out.println("Durchschnittlicher Zinssatz über alle Monate: " + average);
+                System.out.println("Average interest rate over all months: " + average);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -159,10 +161,10 @@ public class FunktionaleZinsen {
 
                 for (int i = 0; i < results.size(); i++) {
                     Map<String, Double> result = results.get(i);
-                    System.out.println("Monat " + (i + 1) + ":");
-                    System.out.println("Maximaler Wert: " + result.get("max"));
-                    System.out.println("Minimaler Wert: " + result.get("min"));
-                    System.out.println("Differenz: " + result.get("diff"));
+                    System.out.println("Month " + (i + 1) + ":");
+                    System.out.println("Maximum value: " + result.get("max"));
+                    System.out.println("Minimal Value: " + result.get("min"));
+                    System.out.println("Difference: " + result.get("diff"));
                     System.out.println();
                 }
             }

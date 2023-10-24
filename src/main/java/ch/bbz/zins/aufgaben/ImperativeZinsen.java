@@ -93,7 +93,7 @@ public class ImperativeZinsen {
                         }
 
                         double average = sum / numberOfDays;
-                        System.out.println("Average per Monht " + (i + 1) + ": " + average);
+                        System.out.println("Average per Month " + (i + 1) + ": " + average);
                     }
                 }
             }
