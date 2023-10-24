@@ -6,7 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.*;
 
+/**
+ * This is a class that performs various calculations and operations for interest rates.
+ * Autor: Jamie Niederhauser und Robin Bühler
+ * Version: 1.0
+ */
+
 public class ImperativeZinsen {
+
     String jsonString = "{\n" +
             "  \"months\": [\n" +
             "    {\n" +
@@ -48,13 +55,24 @@ public class ImperativeZinsen {
             "  ]\n" +
             "}";
 
+    // ObjectMapper for processing JSON
     ObjectMapper objectMapper = new ObjectMapper();
-    JsonNode rootNode = objectMapper.readTree(jsonString);
 
+    // The root of the JSON tree
+    JsonNode rootNode;
+
+    /**
+     * Constructor that converts the JSON string into a JsonNode object.
+     *
+     * @throws JsonProcessingException If an error occurs while processing the JSON string.
+     */
     public ImperativeZinsen() throws JsonProcessingException {
+        rootNode = objectMapper.readTree(jsonString);
     }
 
-
+    /**
+     * Calculates and outputs the average interest rate for each month.
+     */
     public void averageMonth() {
         try {
             JsonNode monthsNode = rootNode.get("months");
@@ -75,7 +93,7 @@ public class ImperativeZinsen {
                         }
 
                         double average = sum / numberOfDays;
-                        System.out.println("Durchschnitt für Monat " + (i + 1) + ": " + average);
+                        System.out.println("Average per Monht " + (i + 1) + ": " + average);
                     }
                 }
             }
@@ -84,6 +102,9 @@ public class ImperativeZinsen {
         }
     }
 
+    /**
+     * Calculates and outputs the average interest rate over all months.
+     */
     public void averageYear() {
         try {
             JsonNode monthsNode = rootNode.get("months");
@@ -110,15 +131,18 @@ public class ImperativeZinsen {
                 }
                 double average = allRates.isEmpty() ? 0.0 : sum / allRates.size();
 
-                System.out.println("Durchschnittlicher Zinssatz über alle Monate: " + average);
+                System.out.println("Average interest rate over all months: " + average);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Updates the interest rates and gives the maximum value, minimum value
+     * and the difference between them for each month.
+     */
     public void updatedValue() {
-
         try {
             JsonNode monthsNode = rootNode.get("months");
 
@@ -140,6 +164,7 @@ public class ImperativeZinsen {
                             for (JsonNode valueNode : valuesNode) {
                                 double rate = valueNode.asDouble();
 
+                                // Update interest rate
                                 if (rate < 0.040) {
                                     rate *= 1.5;
                                 } else {
@@ -164,10 +189,10 @@ public class ImperativeZinsen {
                 }
 
                 for (int i = 0; i < maxValues.size(); i++) {
-                    System.out.println("Monat " + (i + 1) + ":");
-                    System.out.println("Maximaler Wert: " + maxValues.get(i));
-                    System.out.println("Minimaler Wert: " + minValues.get(i));
-                    System.out.println("Differenz: " + differences.get(i));
+                    System.out.println("Month " + (i + 1) + ":");
+                    System.out.println("Maximum value: " + maxValues.get(i));
+                    System.out.println("Minimal Value: " + minValues.get(i));
+                    System.out.println("Difference: " + differences.get(i));
                     System.out.println();
                 }
             }
@@ -175,5 +200,4 @@ public class ImperativeZinsen {
             e.printStackTrace();
         }
     }
-
 }
