@@ -9,7 +9,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
+/**
+ * Implementation with functional elements
+ */
 public class FunktionaleZinsen {
+
+    //String with interest rate
     String jsonString = "{\n" +
             "  \"months\": [\n" +
             "    {\n" +
@@ -50,12 +55,24 @@ public class FunktionaleZinsen {
             "    }\n" +
             "  ]\n" +
             "}";
+
+    // ObjectMapper for processing JSON
     ObjectMapper objectMapper = new ObjectMapper();
+
+    // The root of the JSON tree
     JsonNode rootNode = objectMapper.readTree(jsonString);
 
+    /**
+     * Constructor that converts the JSON string into a JsonNode object.
+     *
+     * @throws JsonProcessingException If an error occurs while processing the JSON string.
+     */
     public FunktionaleZinsen() throws JsonProcessingException {
     }
 
+    /**
+     * output average interest rate per month
+     */
     public void averageMonth() {
         try {
             JsonNode monthsNode = rootNode.get("months");
@@ -81,6 +98,7 @@ public class FunktionaleZinsen {
         }
     }
 
+    /**output Average use over the whole year*/
     public void averageYear() {
         try {
             JsonNode monthsNode = rootNode.get("months");
@@ -109,6 +127,10 @@ public class FunktionaleZinsen {
         }
     }
 
+    /**
+     * Multiply every interest rate lower than 0.040 by 1.5 and multiply all interest rates higher than 0.040 by 1.2.
+     * The output is a list that shows the maximum and minimum value per month and the difference between the two.
+     */
     public void updatedValue() {
         try {
             JsonNode monthsNode = rootNode.get("months");
